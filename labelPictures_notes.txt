@@ -12,3 +12,13 @@ configuration
 	destination folder
 	regex for filename - break it into fields
 	regex for added text - bring the fields back together
+
+FileNameRegex is normal Regex format
+	make sure all fields are surrounded by capturing ( ) parentheses
+	
+DisplayTextFormat
+	each \digit will be replaced by the corresponding match from the Regex
+	ex: "Artist: \1, Title: \2" becomes "Artist: da Vinci, Title: The Mona Lisa"
+	
+	only workds for single digit values
+	
