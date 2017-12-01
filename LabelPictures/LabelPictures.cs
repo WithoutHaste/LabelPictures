@@ -41,15 +41,20 @@ namespace LabelPictures
 				string sourceFileName = Path.GetFileName(sourceFullPath);
 				if(destinationFullPaths.Any(x => Path.GetFileName(x) == sourceFileName)) continue;
 
-				int buffer = 100;
+				int textBuffer = 100;
+				int textPadding = 4;
 
 				Image image = Image.FromFile(sourceFullPath);
-				Bitmap editedImage = new Bitmap(image.Width, image.Height + buffer);
+				Bitmap editedImage = new Bitmap(image.Width, image.Height + textBuffer);
 				using(Graphics graphics = Graphics.FromImage(editedImage))
 				{
-					graphics.DrawImage(image, 0, buffer, image.Width, image.Height);
+					graphics.Clear(System.Drawing.Color.White);
+					graphics.DrawImage(image, 0, textBuffer, image.Width, image.Height);
 
 					string text = AssembleDisplayText(sourceFileName);
+					Font font = GetLargestFont(text, image.Width - (2 * textPadding), graphics);
+					SolidBrush brush = new SolidBrush(System.Drawing.Color.Black);
+					graphics.DrawString(text, font, brush, textPadding, textPadding);
 				}
 
 				string destinationFullPath = Path.Combine(destinationDirectory, sourceFileName);
@@ -85,6 +90,21 @@ namespace LabelPictures
 			}
 
 			return fields;
+		}
+
+		private static Font GetLargestFont(string text, int width, Graphics graphics)
+		{
+			for(int fontSize = 48; fontSize > 5; fontSize--)
+			{
+				Font font = new Font("Arial", fontSize);
+				SizeF textSize = graphics.MeasureString(text, font);
+				if(textSize.Width < width)
+				{
+					return font;
+				}
+			}
+
+			return new Font("Arial", 5);
 		}
 	}
 }
