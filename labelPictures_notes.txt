@@ -1,0 +1,14 @@
+Workaround for Windows 10 slideshow
+I want to see the Artist, Title, and Date of each piece of artwork
+
+Program will compare a source and destination folder of images
+Any image in the source and not in the destination will be processed
+Processing means saving a copy of the picture with a bar of text added with Artist/Title/Date info
+This info will be pulled from the filename based on a configured format
+Will keep the format abstract - just a series of fields, not specifically artist/title/date
+
+configuration
+	source folder
+	destination folder
+	regex for filename - break it into fields
+	regex for added text - bring the fields back together
