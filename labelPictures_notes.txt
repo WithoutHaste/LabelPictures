@@ -26,4 +26,6 @@ DisplayTextFormat
 	accepts multiple DisplayTextFormat settings, as DisplayTextFormat1, DisplayTextFormat2, etc
 	the first one with the correct number of \digit will be used
 	
-	
+BreakWordsOnCapitals
+	if "true"
+	then add spaces between (lowercase)(uppercase) letters in all fields

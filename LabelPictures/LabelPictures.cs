@@ -5,6 +5,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace LabelPictures
@@ -15,6 +16,7 @@ namespace LabelPictures
 		private static string destinationDirectory = ConfigurationManager.AppSettings["DestinationDirectory"];
 		private static char fileNameDelimiter = ConfigurationManager.AppSettings["FileNameDelimiter"][0];
 		private static Dictionary<int, string> displayTextFormats; //key=highest field index, value=format
+		private static bool breakWordsOnCapitals = (ConfigurationManager.AppSettings["BreakWordsOnCapitals"] == "true");
 
 		private static string[] validExtensions = new string[] { ".jpg", ".jpeg", ".png", ".gif", ".bmp" };
 
@@ -116,6 +118,11 @@ namespace LabelPictures
 			foreach(KeyValuePair<int, string> pair in fields)
 			{
 				text = text.Replace("\\" + pair.Key.ToString(), pair.Value);
+			}
+
+			if(breakWordsOnCapitals)
+			{
+				text = Regex.Replace(text, "([a-z])([A-Z])", "$1 $2", RegexOptions.Compiled).Trim();
 			}
 
 			return text;
