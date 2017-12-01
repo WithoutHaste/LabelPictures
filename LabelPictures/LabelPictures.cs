@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -12,6 +13,7 @@ namespace LabelPictures
 	{
 		private static string sourceDirectory = ConfigurationManager.AppSettings["SourceDirectory"] + "";
 		private static string destinationDirectory = ConfigurationManager.AppSettings["DestinationDirectory"] + "";
+		private static string[] validExtensions = new string[] { ".jpg", ".jpeg", ".png", ".gif", ".bmp" };
 
 		static void Main(string[] args)
 		{
@@ -29,11 +31,23 @@ namespace LabelPictures
 
 			foreach(string sourceFullPath in sourceFullPaths)
 			{
+				string sourceExtension = Path.GetExtension(sourceFullPath);
+				if(!validExtensions.Contains(sourceExtension.ToLower())) continue;
+
 				string sourceFileName = Path.GetFileName(sourceFullPath);
 				if(destinationFullPaths.Any(x => Path.GetFileName(x) == sourceFileName)) continue;
 
+				int buffer = 100;
+
+				Image image = Image.FromFile(sourceFullPath);
+				Bitmap editedImage = new Bitmap(image.Width, image.Height + buffer);
+				using(Graphics graphics = Graphics.FromImage(editedImage))
+				{
+					graphics.DrawImage(image, 0, buffer, image.Width, image.Height);
+				}
+
 				string destinationFullPath = Path.Combine(destinationDirectory, sourceFileName);
-				File.Copy(sourceFullPath, destinationFullPath);
+				editedImage.Save(destinationFullPath);
 
 				Console.WriteLine("Copied {0} to destination", sourceFileName);
 			}
