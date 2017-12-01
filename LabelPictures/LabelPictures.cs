@@ -5,7 +5,6 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace LabelPictures
@@ -14,7 +13,7 @@ namespace LabelPictures
 	{
 		private static string sourceDirectory = ConfigurationManager.AppSettings["SourceDirectory"];
 		private static string destinationDirectory = ConfigurationManager.AppSettings["DestinationDirectory"];
-		private static Regex fileNameRegex = new Regex(ConfigurationManager.AppSettings["FileNameRegex"]);
+		private static char fileNameDelimiter = ConfigurationManager.AppSettings["FileNameDelimiter"][0];
 		private static Dictionary<int, string> displayTextFormats; //key=highest field index, value=format
 
 		private static string[] validExtensions = new string[] { ".jpg", ".jpeg", ".png", ".gif", ".bmp" };
@@ -129,12 +128,10 @@ namespace LabelPictures
 			string[] nameAndExtension = fileName.Split('.');
 			fileName = nameAndExtension[0];
 
-			MatchCollection matches = fileNameRegex.Matches(fileName);
-			int count = 1;
-			foreach(Match match in matches)
+			string[] split = fileName.Split(fileNameDelimiter);
+			for(int i = 0; i < split.Length; i++)
 			{
-				fields[count] = match.Value;
-				count++;
+				fields[i + 1] = split[i];
 			}
 
 			return fields;

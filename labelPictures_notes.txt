@@ -13,10 +13,9 @@ configuration
 	regex for filename - break it into fields
 	regex for added text - bring the fields back together
 
-FileNameRegex is normal Regex format
-	a field is any substring that matches the entire regex
-
-	* todo, this can be replaced with a delimiter now
+FileNameDelimiter
+	one character to split the filename into fields on
+	".extension" will not be included
 	
 DisplayTextFormat
 	each \digit will be replaced by the corresponding match from the Regex
