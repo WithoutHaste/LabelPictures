@@ -4,6 +4,8 @@ Workaround for displaying descriptive text with Windows Slideshow images.  Loops
 
 Only image files in the Source Directory that do not exist in the Destination Directory will be processed.
 
+Compiled executable located in LabelPictures\bin\Release
+
 # Configuration
 
 SourceDirectory: full path to source folder
