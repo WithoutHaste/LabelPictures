@@ -15,17 +15,62 @@ namespace LabelPictures
 		private static string sourceDirectory = ConfigurationManager.AppSettings["SourceDirectory"];
 		private static string destinationDirectory = ConfigurationManager.AppSettings["DestinationDirectory"];
 		private static Regex fileNameRegex = new Regex(ConfigurationManager.AppSettings["FileNameRegex"]);
-		private static string displayTextFormat = ConfigurationManager.AppSettings["DisplayTextFormat"];
+		private static Dictionary<int, string> displayTextFormats; //key=highest field index, value=format
 
 		private static string[] validExtensions = new string[] { ".jpg", ".jpeg", ".png", ".gif", ".bmp" };
 
 		static void Main(string[] args)
 		{
+			LoadDisplayTextFormats();
 			ProcessImages();
 
 			Console.WriteLine();
 			Console.WriteLine("Process complete.");
 			Console.ReadLine();
+		}
+
+		private static void LoadDisplayTextFormats()
+		{
+			displayTextFormats = new Dictionary<int, string>();
+
+			string format = ConfigurationManager.AppSettings["DisplayTextFormat"];
+			if(format != null)
+			{
+				displayTextFormats[HighestFieldIndex(format)] = format;
+			}
+
+			int count = 1;
+			bool success = false;
+			do
+			{
+				success = false;
+
+				format = ConfigurationManager.AppSettings["DisplayTextFormat" + count];
+				if(format != null)
+				{
+					success = true;
+					int highestFieldIndex = HighestFieldIndex(format);
+					if(!displayTextFormats.ContainsKey(highestFieldIndex))
+					{
+						displayTextFormats[highestFieldIndex] = format;
+					}
+				}
+
+				count++;
+			} while(success);
+		}
+
+		private static int HighestFieldIndex(string format)
+		{
+			for(int i = 9; i > 0; i--)
+			{
+				if(format.IndexOf("\\" + i) > -1)
+				{
+					return i;
+				}
+			}
+
+			return 0;
 		}
 
 		private static void ProcessImages()
@@ -68,7 +113,7 @@ namespace LabelPictures
 		{
 			Dictionary<int, string> fields = PullFileNameFields(fileName);
 
-			string text = displayTextFormat + "";
+			string text = SelectDisplayTextFormat(fields);
 			foreach(KeyValuePair<int, string> pair in fields)
 			{
 				text = text.Replace("\\" + pair.Key.ToString(), pair.Value);
@@ -80,7 +125,10 @@ namespace LabelPictures
 		private static Dictionary<int, string> PullFileNameFields(string fileName)
 		{
 			Dictionary<int, string> fields = new Dictionary<int, string>();
-			
+
+			string[] nameAndExtension = fileName.Split('.');
+			fileName = nameAndExtension[0];
+
 			MatchCollection matches = fileNameRegex.Matches(fileName);
 			int count = 1;
 			foreach(Match match in matches)
@@ -90,6 +138,21 @@ namespace LabelPictures
 			}
 
 			return fields;
+		}
+
+		private static string SelectDisplayTextFormat(Dictionary<int, string> fields)
+		{
+			int maxIndex = fields.Keys.Max();
+			while(maxIndex >= 0)
+			{
+				if(displayTextFormats.ContainsKey(maxIndex))
+				{
+					return displayTextFormats[maxIndex] + "";
+				}
+				maxIndex--;
+			}
+
+			return "";
 		}
 
 		private static Font GetLargestFont(string text, int width, Graphics graphics)

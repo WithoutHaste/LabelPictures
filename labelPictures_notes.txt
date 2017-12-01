@@ -14,11 +14,17 @@ configuration
 	regex for added text - bring the fields back together
 
 FileNameRegex is normal Regex format
-	make sure all fields are surrounded by capturing ( ) parentheses
+	a field is any substring that matches the entire regex
+
+	* todo, this can be replaced with a delimiter now
 	
 DisplayTextFormat
 	each \digit will be replaced by the corresponding match from the Regex
 	ex: "Artist: \1, Title: \2" becomes "Artist: da Vinci, Title: The Mona Lisa"
 	
-	only workds for single digit values
+	only works for single digit values
+	
+	accepts multiple DisplayTextFormat settings, as DisplayTextFormat1, DisplayTextFormat2, etc
+	the first one with the correct number of \digit will be used
+	
 	
