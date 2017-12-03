@@ -138,7 +138,7 @@ namespace LabelPictures
 
 			if(breakWordsOnCapitals)
 			{
-				text = Regex.Replace(text, "([a-z])([A-Z])", "$1 $2", RegexOptions.Compiled).Trim();
+				text = Regex.Replace(text, "([a-zA-Z])([A-Z])", "$1 $2", RegexOptions.Compiled).Trim();
 			}
 
 			return text;
