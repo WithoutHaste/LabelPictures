@@ -27,3 +27,5 @@ DisplayTextFormat:
 BreakWordsOnCapitals: if "true", then inserts spaces between camel-cased words
 	
 	ex: "TheAncientOfDays" becomes "The Ancient Of Days"
+	
+MaxImageHeight: (optional) images will be scaled down to fit within this pixel limit

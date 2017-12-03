@@ -17,12 +17,20 @@ namespace LabelPictures
 		private static char fileNameDelimiter = ConfigurationManager.AppSettings["FileNameDelimiter"][0];
 		private static Dictionary<int, string> displayTextFormats; //key=highest field index, value=format
 		private static bool breakWordsOnCapitals = (ConfigurationManager.AppSettings["BreakWordsOnCapitals"] == "true");
+		private static int? maxImageHeight = null;
 
 		private static string[] validExtensions = new string[] { ".jpg", ".jpeg", ".png", ".gif", ".bmp" };
 
 		static void Main(string[] args)
 		{
 			LoadDisplayTextFormats();
+
+			int temp;
+			if(Int32.TryParse(ConfigurationManager.AppSettings["MaxImageHeight"], out temp))
+			{
+				maxImageHeight = temp;
+			}
+
 			ProcessImages();
 
 			Console.WriteLine();
@@ -91,14 +99,22 @@ namespace LabelPictures
 				int textPadding = 4;
 
 				Image image = Image.FromFile(sourceFullPath);
-				Bitmap editedImage = new Bitmap(image.Width, image.Height + textBuffer);
+				int editedImageHeight = image.Height;
+				if(maxImageHeight.HasValue)
+				{
+					editedImageHeight = Math.Min(image.Height, maxImageHeight.Value - textBuffer);
+				}
+				double scale = (double)editedImageHeight / (double)image.Height;
+				int editedImageWidth = (int)(image.Width * scale);
+
+				Bitmap editedImage = new Bitmap(editedImageWidth, editedImageHeight + textBuffer);
 				using(Graphics graphics = Graphics.FromImage(editedImage))
 				{
 					graphics.Clear(System.Drawing.Color.White);
-					graphics.DrawImage(image, 0, textBuffer, image.Width, image.Height);
+					graphics.DrawImage(image, 0, textBuffer, editedImageWidth, editedImageHeight);
 
 					string text = AssembleDisplayText(sourceFileName);
-					Font font = GetLargestFont(text, image.Width - (2 * textPadding), graphics);
+					Font font = GetLargestFont(text, editedImageWidth - (2 * textPadding), graphics);
 					SolidBrush brush = new SolidBrush(System.Drawing.Color.Black);
 					graphics.DrawString(text, font, brush, textPadding, textPadding);
 				}
